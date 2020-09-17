@@ -1,4 +1,4 @@
-package com.project.mywetherapp.model;
+package com.project.mywetherapp.model.wether;
 
 public class Response {
     public Header header;

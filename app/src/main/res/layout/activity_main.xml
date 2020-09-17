@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:orientation="vertical">
 
         <TextView
@@ -28,53 +29,31 @@
 
             <TextView
                 android:id="@+id/textView2"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="5"
                 android:gravity="center"
                 android:text="위치 정보 없음" />
 
             <ImageButton
                 android:id="@+id/imageButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="#00FFFFFF"
-                app:srcCompat="@drawable/icons_place_marker" />
+                android:contentDescription="getLocation"
+                android:src="@drawable/icons_place_marker" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabIndicatorColor="#A1BDF4">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_menu1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="오늘" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_menu2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="내일" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_menu3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="주간 날씨" />
-    </com.google.android.material.tabs.TabLayout>
-
-    <FrameLayout
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    </FrameLayout>
+    </androidx.viewpager.widget.ViewPager>
+
 
 </LinearLayout>

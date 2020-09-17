@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IntroActivity">
+    tools:context=".activity.IntroActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.382"
-        app:srcCompat="@drawable/icon_sun" />
+        app:srcCompat="@drawable/bg_intro" />
 
     <TextView
         android:id="@+id/textView"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/gmarket_sans_medium"
         android:text="날씨어때"
-        android:textColor="#131313"
+        android:textColor="#313030"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

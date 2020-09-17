@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
     tools:context=".fragment.DayAftTomorr_Fragment">
 
     <!-- TODO: Update blank fragment layout -->

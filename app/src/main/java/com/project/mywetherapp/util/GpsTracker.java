@@ -1,4 +1,4 @@
-package com.project.mywetherapp;
+package com.project.mywetherapp.util;
 
 import android.Manifest;
 import android.app.Service;

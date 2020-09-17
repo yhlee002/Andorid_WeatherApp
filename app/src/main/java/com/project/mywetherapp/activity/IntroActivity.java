@@ -1,13 +1,12 @@
-package com.project.mywetherapp;
+package com.project.mywetherapp.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
+
+import com.project.mywetherapp.R;
 
 public class IntroActivity extends AppCompatActivity {
 

@@ -12,6 +12,11 @@ import com.project.mywetherapp.R;
 
 public class Tomorrow_Fragment extends Fragment {
 
+    private static Tomorrow_Fragment tomorrowFragment = new Tomorrow_Fragment();
+    public static Tomorrow_Fragment newInstance(){
+        return tomorrowFragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

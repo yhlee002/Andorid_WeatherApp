@@ -28,9 +28,8 @@ android {
 
 allprojects {
     repositories {
-        maven{
-            url 'https://jitpack.io'
-        }
+        maven{ url 'https://jitpack.io' }
+        maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
     }
 }
 
@@ -47,8 +46,8 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-//    implementation 'com.github.pedroSG94:AutoPermissions:1.0.3'
     implementation group: 'gun0912.ted', name: 'tedpermission', version: '2.2.0'
-
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'me.relex:circleindicator:2.1.4'
     configurations { compile.exclude group: "junit", module: "junit"}
 }

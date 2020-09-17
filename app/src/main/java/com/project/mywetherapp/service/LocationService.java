@@ -1,4 +1,4 @@
-package com.project.mywetherapp;
+package com.project.mywetherapp.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.project.mywetherapp.R;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,22 +41,18 @@ import java.util.Map;
 public class LocationService extends Service {
     private final static String API_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
     private static String API_KEY;
-    private static String address; // address= 추가 필요
-
+    private static String address;
+//    private static String midStation;
 
     private static RequestQueue requestQueue;
     private static ResultReceiver receiver;
     private static Map<String, String> locationMap;
-    private static String topCode, midCode, leafCode;
+    private static String topCode, midCode;
     private static String[] addressArr;
     private static Map<String, String> xyMap;
-//    static int topCode, midCode, leafCode;
-    //    Double x, y;
-//    static Map<String, Double> locationMap;
 
     @Override
     public void onCreate() {
-        Log.i("[L Service - onCreate]", "LocationService is created");
         super.onCreate();
 
         if (requestQueue == null) {
@@ -70,7 +67,6 @@ public class LocationService extends Service {
         String address = (String) intent.getStringExtra("address");
         receiver = intent.getParcelableExtra("resultReceiver");
 
-        Log.i("[L Service - onSC]", "address : " + address);
         makeRequest(address.split(" "));
         return super.onStartCommand(intent, flags, startId);
     }
@@ -78,13 +74,10 @@ public class LocationService extends Service {
     private void findLocation(String[] addressArr) throws UnsupportedEncodingException {
         topCode = "0";
         midCode = "0";
-        leafCode = "0";
 
         locationMap = new HashMap<>();
 
         LocationService.addressArr = addressArr;
-
-        Log.i("[L Service - findL]", "들어온 addressArr : " + Arrays.toString(addressArr));
         findTop(addressArr[0]); // '시, 도' 코드
     }
 
@@ -95,7 +88,7 @@ public class LocationService extends Service {
             url = API_URL + "address=" + URLEncoder.encode(address, "UTF-8") + "&key="+API_KEY;
             Log.i("[L Service - makeR]", "url : " + url);
             StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
-                Log.i("[L Service - makeR]", "response : " + response);
+//                Log.i("[L Service - makeR]", "response : " + response);
                 xyMap = processLocation(response);
                 if (xyMap == null) {
                     try {
@@ -132,7 +125,7 @@ public class LocationService extends Service {
             latitude = ((JSONObject) (((JSONObject) obj2.get("geometry")).get("location"))).get("lat").toString();
             longitude = ((JSONObject) (((JSONObject) obj2.get("geometry")).get("location"))).get("lng").toString();
         }
-        Log.i("[L Service - processL]", "latitude : " + latitude + ", longitude : " + longitude);
+//        Log.i("[L Service - processL]", "latitude : " + latitude + ", longitude : " + longitude);
         Map<String, String> gridXYMap = getGridXY(latitude, longitude);
         return gridXYMap;
     }
@@ -187,7 +180,7 @@ public class LocationService extends Service {
         String y = Double.toString(Math.floor(ro - ra * Math.cos(theta) + YO + 0.5));
         map.put("x", x.substring(0, x.indexOf(".")));
         map.put("y", y.substring(0, y.indexOf(".")));
-        Log.i("[L Service - getGridXY]", "x : " + x.substring(0, x.indexOf(".")) + ", y : " + y.substring(0, y.indexOf(".")));
+//        Log.i("[L Service - getGridXY]", "x : " + x.substring(0, x.indexOf(".")) + ", y : " + y.substring(0, y.indexOf(".")));
         return map;
     }
 
@@ -203,7 +196,7 @@ public class LocationService extends Service {
             public void onResponse(String response) {
                 //                    String sEncode = new String(s.getBytes("UTF-8"), "UTF-8");
 //                    String sEncode2 = new String(sEncode.getBytes("euc-kr"), "euc-kr");
-                Log.i("[L Service - T resp]", "address : " + Arrays.toString(addressArr) + ", response : " + response); //new String(response.getBytes("UTF-8"), "UTF-8")
+//                Log.i("[L Service - T resp]", "address : " + Arrays.toString(addressArr) + ", response : " + response); //new String(response.getBytes("UTF-8"), "UTF-8")
                 Gson gson = new Gson();
                 JsonArray responseArr = gson.fromJson(response, JsonArray.class);
                 JsonObject jobj;
@@ -220,7 +213,7 @@ public class LocationService extends Service {
 
                 findMid(topCode, addressArr[1]); // '시, 군, 구' 코드
 
-                Log.i("[L Service - F top]", "find top : " + topCode);
+//                Log.i("[L Service - F top]", "find top : " + topCode);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -258,7 +251,7 @@ public class LocationService extends Service {
             @Override
             public void onResponse(String response) {
 
-                Log.i("[L Service - M resp]", "topCode : " + topCode + ", s : " + s + ", response : " + response);
+//                Log.i("[L Service - M resp]", "topCode : " + topCode + ", s : " + s + ", response : " + response);
                 Gson gson = new Gson();
                 JsonArray responseArr = gson.fromJson(response, JsonArray.class);
                 JsonObject jobj;
@@ -268,12 +261,13 @@ public class LocationService extends Service {
                     String value = jobj.get("value").getAsString().replace("\"", "");
                     if (value.equals(s)) {
                         midCode = jobj.get("code").getAsString();
+//                        midStation = value;
                         System.out.println(s + "코드 : " + midCode);
                         break;
                     }
                 }
 
-                Log.i("[L Service - F mid]", "find mid : " + midCode);
+//                Log.i("[L Service - F mid]", "find mid : " + midCode);
 
                 findLeaf(midCode, addressArr[2]); // '동, 읍, 면, 리' 코드
             }
@@ -315,7 +309,6 @@ public class LocationService extends Service {
                     jobj = (JsonObject) responseArr.get(i);
                     String value = jobj.get("value").getAsString().replace("\"", "");
                     if (value.equals(s)) {
-                        leafCode = jobj.get("code").getAsString();
                         locationMap.put("x", jobj.get("x").getAsString());
                         locationMap.put("y", jobj.get("y").getAsString());
                         break;
