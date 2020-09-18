@@ -1,7 +1,12 @@
 package com.project.mywetherapp.service;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
@@ -9,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -42,7 +48,6 @@ public class LocationService extends Service {
     private final static String API_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
     private static String API_KEY;
     private static String address;
-//    private static String midStation;
 
     private static RequestQueue requestQueue;
     private static ResultReceiver receiver;
@@ -54,6 +59,24 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = manager.getNotificationChannel("02");
+            if(channel == null){
+                channel = new NotificationChannel("02", getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
+                manager.createNotificationChannel(channel);
+            }
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "02");
+            builder.setContentTitle("날씨어때");
+            builder.setContentText("날씨어때 어플이 실행중입니다.");
+            builder.setAutoCancel(true);
+            builder.setSmallIcon(R.mipmap.ic_launcher_round);
+//            Notification noti = new NotificationCompat.Builder(this, "02").build();
+            Notification noti = builder.build();
+            startForeground(1,noti);
+            manager.cancelAll();
+        }
 
         if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(this);
@@ -109,6 +132,7 @@ public class LocationService extends Service {
             }, error -> error.printStackTrace());
             request.setShouldCache(false);
             requestQueue.add(request);
+            stopSelf();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -357,5 +381,11 @@ public class LocationService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopForeground(true);
     }
 }

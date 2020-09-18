@@ -67,7 +67,7 @@ public class WetherAdapter02 extends RecyclerView.Adapter<WetherAdapter02.ViewHo
         }
 
         public void setInfo(FcstInfo fcstInfo) {
-            Log.i("[W Adapter2 - setInfo]", "fcstInfo : " + fcstInfo.toString());
+//            Log.i("[W Adapter2 - setInfo]", "fcstInfo : " + fcstInfo.toString());
             String time = fcstInfo.getFcstTime().substring(0, 2);
             String sky = fcstInfo.getCategoryMap().get("SKY");
             String pop = fcstInfo.getCategoryMap().get("POP");

@@ -3,6 +3,7 @@ package com.project.mywetherapp.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Geocoder;
 import android.os.Build;
@@ -102,7 +103,6 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .check();
 
-
         Log.i("[Main A]", "loadAllPermissions");
 
         textview_address = findViewById(R.id.textView2);
@@ -146,13 +146,15 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
         String[] addressArr = address.split(" ");
 //                addressArr[3].substring()
         Log.i("[MAIN A]", "얻어진 주소(배열 형태) : " + Arrays.toString(addressArr));
-        StringBuilder sb = new StringBuilder();
-        sb.append(addressArr[1] + " ");
-        sb.append(addressArr[2] + " ");
-        sb.append(addressArr[3]); // 뒷부분은 쓰지 않음
-        textview_address.setText(sb.toString());
+        if(!addressArr[2].equals("사용불가")){
+            StringBuilder sb = new StringBuilder();
+            sb.append(addressArr[1] + " ");
+            sb.append(addressArr[2] + " ");
+            textview_address.setText(sb.toString());
 
-        sendAddressData(sb.toString());
+            sb.append(addressArr[3]); // 뒷부분은 쓰지 않음
+            sendAddressData(sb.toString());
+        }
     }
 
     private void transCoor(double latitude, double longitude) {
@@ -167,6 +169,7 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
                 Map<String, String> XYMap = findTMCoorAdapter(response);
                 String x = XYMap.get("x");
                 String y = XYMap.get("y");
+                Log.i("[MAIN A - transCoor]", "x : "+x+", y : "+y);
                 sendXYforNearbyMsrstnList(x, y);
             }
         }, new Response.ErrorListener() {
@@ -210,7 +213,6 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
         return XYMap;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void sendAddressData(String address) {
         Intent intent = new Intent(this, LocationService.class);
         Log.i("[Main A - sendA]", "들어온 address : " + address);
@@ -219,7 +221,7 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
 
 //        startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
+            getApplicationContext().startForegroundService(intent);
         } else {
             startService(intent);
         }
@@ -231,7 +233,7 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
         intent.putExtra("x", x);
         intent.putExtra("y", y);
         intent.putExtra("resultReceiver", resultReceiver);
-
+//        startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
@@ -246,6 +248,7 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
         intent.putExtra("station", station);
         intent.putExtra("resultReceiver", resultReceiver);
 
+//        startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
@@ -489,7 +492,12 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
         intent.putExtra("x", x);
         intent.putExtra("y", y);
         intent.putExtra("resultReceiver", resultReceiver);
-        startService(intent);
+//        startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getApplicationContext().startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
     }
 
     // 지오코더 api를 사용해 x, y좌표를 이용해 현재 위치 가져옴
@@ -528,10 +536,18 @@ public class MainActivity extends FragmentActivity { //  implements AutoPermissi
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i("[MAIN A]", "onResume() 호출");
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
+        Log.i("[MAIN A]", "onRestart() 호출");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i("[MAIN A]", "onDestroy() 호출");
     }
 }

@@ -1,14 +1,20 @@
 package com.project.mywetherapp.service;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -31,6 +37,17 @@ public class NearbyMsrstnListService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = manager.getNotificationChannel("02");
+            if (channel == null) {
+                channel = new NotificationChannel("02", getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
+                manager.createNotificationChannel(channel);
+            }
+            Notification noti = new NotificationCompat.Builder(this, "02").build();
+            startForeground(1, noti);
+            manager.cancelAll();
+        }
 
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -41,8 +58,6 @@ public class NearbyMsrstnListService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Log.i("[N Service - onStart]", "onStartCommand() called");
         final ResultReceiver receiver = intent.getParcelableExtra("resultReceiver");
         String x = intent.getStringExtra("x");
         String y = intent.getStringExtra("y");
@@ -73,6 +88,7 @@ public class NearbyMsrstnListService extends Service {
         request.setRetryPolicy(new DefaultRetryPolicy(500000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         request.setShouldCache(false);
         requestQueue.add(request);
+        stopSelf();
     }
 
     private Bundle dataAdapter(String response) {
@@ -104,5 +120,11 @@ public class NearbyMsrstnListService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopForeground(true);
     }
 }

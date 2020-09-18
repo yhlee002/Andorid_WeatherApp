@@ -1,7 +1,11 @@
 package com.project.mywetherapp.service;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -63,6 +68,17 @@ public class WetherService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = manager.getNotificationChannel("02");
+            if (channel == null) {
+                channel = new NotificationChannel("02", getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
+                manager.createNotificationChannel(channel);
+            }
+            Notification noti = new NotificationCompat.Builder(this, "02").build();
+            startForeground(1, noti);
+            manager.cancelAll();
+        }
 
         if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -136,7 +152,6 @@ public class WetherService extends Service {
         request.setShouldCache(false);
         requestQueue.add(request);
 
-        stopSelf();
     }
 
     private void makeRequestUltraVilage(String url, ResultReceiver receiver) {
@@ -415,5 +430,11 @@ public class WetherService extends Service {
         dateData.put("baseTime", baseTime);
 
         return dateData;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopForeground(true);
     }
 }
