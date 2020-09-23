@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.project.mywetherapp.fragment.DayAftTomorr_Fragment;
 import com.project.mywetherapp.fragment.Today_Fragment;
 import com.project.mywetherapp.fragment.Tomorrow_Fragment;
-
+// 페이지 슬라이딩을 위해 뷰페이저에 프레그먼트를 연결하는 역할을 수행하는 어댑터
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     public int mCount;

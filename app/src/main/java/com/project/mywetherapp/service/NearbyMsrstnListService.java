@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.project.mywetherapp.R;
-
+// TM좌표를 기반으로 가까운 대기오염 측정소의 목록 조회(가장 가까운 측정소의 측정소명을 반환)
 public class NearbyMsrstnListService extends Service {
 
     private static RequestQueue requestQueue;
