@@ -448,13 +448,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/notiButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00FFFFFF"
-                android:text="알림 설정하기" />
-
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -476,19 +469,24 @@
                             <LinearLayout
                                 android:layout_width="379dp"
                                 android:layout_height="match_parent"
-                                android:orientation="vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="vertical"
+                                android:paddingLeft="10dp">
 
                                 <TextView
                                     android:id="@+id/textView40"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="체감 온도" />
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="체감 온도"
+                                    android:textColor="#383737" />
 
                                 <TextView
                                     android:id="@+id/textView41"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="TextView" />
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="(정보 없음)" />
 
                             </LinearLayout>
 
@@ -501,6 +499,52 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="379dp"
+                    android:layout_height="match_parent">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="379dp"
+                                android:layout_height="match_parent"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical"
+                                android:paddingLeft="10dp">
+
+                                <TextView
+                                    android:id="@+id/textView42"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="자외선 지수"
+                                    android:textColor="#383737" />
+
+                                <TextView
+                                    android:id="@+id/textView43"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="(정보 없음)" />
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/imageView15"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/icons_summer"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
                 </TableRow>
 
                 <TableRow
@@ -518,48 +562,45 @@
                             android:orientation="horizontal">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="379dp"
                                 android:layout_height="match_parent"
-                                android:orientation="vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="vertical"
+                                android:paddingLeft="10dp">
 
                                 <TextView
-                                    android:id="@+id/textView42"
+                                    android:id="@+id/textView44"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="TextView" />
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="불쾌지수/동파가능지수"
+                                    android:textColor="#383737" />
 
                                 <TextView
-                                    android:id="@+id/textView43"
+                                    android:id="@+id/textView45"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="TextView" />
+                                    android:layout_gravity="center_horizontal"
+                                    android:text="(정보 없음)" />
                             </LinearLayout>
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </TableRow>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
+                            <ImageView
+                                android:id="@+id/imageView14"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"></LinearLayout>
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/icons_dry" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                 </TableRow>
 
             </TableLayout>
+
+            <Button
+                android:id="@+id/notiButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:text="알림 설정하기" />
 
         </LinearLayout>
     </ScrollView>
