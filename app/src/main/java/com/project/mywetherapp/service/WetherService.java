@@ -107,16 +107,13 @@ public class WetherService extends Service {
             String urlStr_2 = createUltraUri(VilageUltraUrl);
 
             // 내일 날씨
-//            Map<String, String> dateData2 = getDateAndTime();
-//            base_date2 = dateData2.get("baseDate");
-//            base_time2 = dateData2.get("baseTime");
             String urlStr_3 = createUri(VilageUrl, 2);
 
             makeRequestVilage(urlStr_1, 2, receiver); // 동네 예보
             makeRequestUltraVilage(urlStr_2, receiver); // 초단기실황
             makeRequestVilage(urlStr_3, 4, receiver); // 내일 예보
 
-//            makeRequestMidFcst(url, reciver); // 3일후 - 10일 후의 날씨 가져오기(최저/최고 기온 가져오기 + 강수확률 가져오기 -----------> 매일의 최저/최고 기온과 강수확률에 따른 아이콘 변경)
+//            makeRequestMidFcst(url, reciver); // 주간 날씨 가져오기(최저/최고 기온 가져오기 + 강수확률 가져오기 -----------> 매일의 최저/최고 기온과 강수확률에 따른 아이콘 변경)
             Log.i("[W Service - onC]", "동네 오늘 예보 url : " + urlStr_1);
             Log.i("[W Service - onC]", "동네 초단기 실황 : " + urlStr_2);
             Log.i("[W Service - onC]", "동네 내일 예보 url : " + urlStr_3);
@@ -136,8 +133,6 @@ public class WetherService extends Service {
 
     private void makeRequestVilage(String url, int requestCode, final ResultReceiver receiver) {
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
-//            Log.i("[W Service - Make Req]", "response : " + response);
-
             Bundle bundle1 = dataAdapter(response);
             if (bundle1 != null) {
                 receiver.send(requestCode, bundle1);
@@ -156,8 +151,6 @@ public class WetherService extends Service {
 
     private void makeRequestUltraVilage(String url, ResultReceiver receiver) {
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
-//            Log.i("[W Service - Make ReqU]", "response : " + response);
-
             Bundle bundle2 = dataAdapterUltra(response);
             receiver.send(3, bundle2);
             stopSelf();
@@ -169,8 +162,6 @@ public class WetherService extends Service {
 
     // 받아온 데이터를 객체에 매핑
     private Bundle dataAdapter(String resp) {
-//        Log.i("[W Service - Adapter]", resp);
-
         Gson gson = new Gson();
         ResponseAll responseAll = gson.fromJson(resp, ResponseAll.class);
 
@@ -198,12 +189,8 @@ public class WetherService extends Service {
     }
 
     private Bundle dataAdapterUltra(String resp) {
-//        Log.i("[W Service - AdapterU]", resp);
         Gson gson = new Gson();
         JsonObject responseAll = gson.fromJson(resp, JsonObject.class);
-//        if(!responseAll.has("response")){
-//            makeRequestVilage();
-//        }
         JsonObject response = responseAll.get("response").getAsJsonObject();
         JsonObject body = response.get("body").getAsJsonObject();
         JsonObject items = body.get("items").getAsJsonObject();
@@ -406,7 +393,7 @@ public class WetherService extends Service {
         String hour = day.format(DateTimeFormatter.ofPattern("HH"));
         String minute = day.format(DateTimeFormatter.ofPattern("mm"));
 
-        Log.i("[W Service - CurrDateAndTime]", "baseDate : " + baseDate + ", hour : " + hour + ", minute : " + minute);
+//        Log.i("[W Service - CurrDateAndTime]", "baseDate : " + baseDate + ", hour : " + hour + ", minute : " + minute);
 
         if (Integer.parseInt(minute) >= 40) {
             baseTime = hour + "00";
@@ -424,7 +411,7 @@ public class WetherService extends Service {
             baseDate = day.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
 
-        Log.i("W Service - CurrDateAndTime]", day.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ", base_date : " + baseDate + ", base_time : " + baseTime);
+//        Log.i("W Service - CurrDateAndTime]", day.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ", base_date : " + baseDate + ", base_time : " + baseTime);
 
         dateData.put("baseDate", baseDate);
         dateData.put("baseTime", baseTime);

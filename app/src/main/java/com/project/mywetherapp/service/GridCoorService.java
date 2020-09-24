@@ -37,14 +37,13 @@ import org.json.simple.JSONValue;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
+// 기상청 기준 지명이 아니라서 날씨 정보를 받아오지 못할 경우 구글 Geocoding api 를 사용해 구글 기준 주소를 받아옴
 // http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt
 // http://www.kma.go.kr/DFSROOT/POINT/DATA/mdl.[시 code].json.txt
 // http://www.kma.go.kr/DFSROOT/POINT/DATA/leaf.[동/읍/면 code].json.txt
-public class LocationService extends Service {
+public class GridCoorService extends Service {
     private final static String API_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
     private static String API_KEY;
     private static String address;
@@ -72,7 +71,7 @@ public class LocationService extends Service {
             builder.setContentText("날씨어때 어플이 실행중입니다.");
             builder.setAutoCancel(true);
             builder.setSmallIcon(R.mipmap.ic_launcher_round);
-//            Notification noti = new NotificationCompat.Builder(this, "02").build();
+
             Notification noti = builder.build();
             startForeground(1,noti);
             manager.cancelAll();
@@ -100,7 +99,7 @@ public class LocationService extends Service {
 
         locationMap = new HashMap<>();
 
-        LocationService.addressArr = addressArr;
+        GridCoorService.addressArr = addressArr;
         findTop(addressArr[0]); // '시, 도' 코드
     }
 
@@ -109,9 +108,8 @@ public class LocationService extends Service {
         address = addressArr[0] + " " + addressArr[1] + " " + addressArr[2];
         try {
             url = API_URL + "address=" + URLEncoder.encode(address, "UTF-8") + "&key="+API_KEY;
-            Log.i("[L Service - makeR]", "url : " + url);
+            Log.i("[GridCoorService- mR]", "url : " + url);
             StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
-//                Log.i("[L Service - makeR]", "response : " + response);
                 xyMap = processLocation(response);
                 if (xyMap == null) {
                     try {
@@ -149,7 +147,7 @@ public class LocationService extends Service {
             latitude = ((JSONObject) (((JSONObject) obj2.get("geometry")).get("location"))).get("lat").toString();
             longitude = ((JSONObject) (((JSONObject) obj2.get("geometry")).get("location"))).get("lng").toString();
         }
-//        Log.i("[L Service - processL]", "latitude : " + latitude + ", longitude : " + longitude);
+
         Map<String, String> gridXYMap = getGridXY(latitude, longitude);
         return gridXYMap;
     }
@@ -204,13 +202,10 @@ public class LocationService extends Service {
         String y = Double.toString(Math.floor(ro - ra * Math.cos(theta) + YO + 0.5));
         map.put("x", x.substring(0, x.indexOf(".")));
         map.put("y", y.substring(0, y.indexOf(".")));
-//        Log.i("[L Service - getGridXY]", "x : " + x.substring(0, x.indexOf(".")) + ", y : " + y.substring(0, y.indexOf(".")));
+
         return map;
     }
 
-    //    public Map<String, Double> processLocation2(String response) {
-//
-//    }
     private void findTop(final String s) throws UnsupportedEncodingException {
         final String urlStr = "http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt";
 
@@ -218,9 +213,6 @@ public class LocationService extends Service {
 
             @Override
             public void onResponse(String response) {
-                //                    String sEncode = new String(s.getBytes("UTF-8"), "UTF-8");
-//                    String sEncode2 = new String(sEncode.getBytes("euc-kr"), "euc-kr");
-//                Log.i("[L Service - T resp]", "address : " + Arrays.toString(addressArr) + ", response : " + response); //new String(response.getBytes("UTF-8"), "UTF-8")
                 Gson gson = new Gson();
                 JsonArray responseArr = gson.fromJson(response, JsonArray.class);
                 JsonObject jobj;
@@ -230,20 +222,18 @@ public class LocationService extends Service {
                     String value = jobj.get("value").getAsString().replace("\"", "");
                     if (value.equals(s)) {
                         topCode = jobj.get("code").getAsString();
-                        System.out.println(s + "코드 : " + topCode);
+                        Log.i("[GridCoorService]", s + "코드 : " + topCode);
                         break;
                     }
                 }
 
                 findMid(topCode, addressArr[1]); // '시, 군, 구' 코드
-
-//                Log.i("[L Service - F top]", "find top : " + topCode);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LocationService.this, "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                Log.i("[Find Top]", " 통신 실패 : ");
+                Toast.makeText(GridCoorService.this, "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                Log.i("[GridCoorService - fT]", " 통신 실패 : ");
                 error.printStackTrace();
             }
         }) {
@@ -253,10 +243,8 @@ public class LocationService extends Service {
                     String utf8String = new String(response.data, "UTF-8");
                     return Response.success(utf8String, HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
-                    // log error
                     return Response.error(new ParseError(e));
                 } catch (Exception e) {
-                    // log error
                     return Response.error(new ParseError(e));
                 }
             }
@@ -264,7 +252,7 @@ public class LocationService extends Service {
 
         request.setShouldCache(false);
 //        requestQueue = Volley.newRequestQueue(this);
-        LocationService.requestQueue.add(request);
+        GridCoorService.requestQueue.add(request);
     }
 
     private void findMid(final String topCode, final String s) {
@@ -274,8 +262,6 @@ public class LocationService extends Service {
 
             @Override
             public void onResponse(String response) {
-
-//                Log.i("[L Service - M resp]", "topCode : " + topCode + ", s : " + s + ", response : " + response);
                 Gson gson = new Gson();
                 JsonArray responseArr = gson.fromJson(response, JsonArray.class);
                 JsonObject jobj;
@@ -285,20 +271,17 @@ public class LocationService extends Service {
                     String value = jobj.get("value").getAsString().replace("\"", "");
                     if (value.equals(s)) {
                         midCode = jobj.get("code").getAsString();
-//                        midStation = value;
                         System.out.println(s + "코드 : " + midCode);
                         break;
                     }
                 }
-
-//                Log.i("[L Service - F mid]", "find mid : " + midCode);
 
                 findLeaf(midCode, addressArr[2]); // '동, 읍, 면, 리' 코드
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LocationService.this, "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GridCoorService.this, "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -315,7 +298,7 @@ public class LocationService extends Service {
         };
 
         request.setShouldCache(false);
-        LocationService.requestQueue.add(request);
+        GridCoorService.requestQueue.add(request);
     }
 
     private void findLeaf(final String midCode, final String s) {
@@ -342,7 +325,7 @@ public class LocationService extends Service {
                 String x = locationMap.get("x");
                 String y = locationMap.get("y");
 
-                Log.i("[L Service - onSC]", "x : " + x + ", y : " + y);
+                Log.i("[GridCoorService - onSC]", "x : " + x + ", y : " + y);
 
                 Bundle bundle = new Bundle();
                 Map<String, String> xyMap = new HashMap<>();
@@ -355,7 +338,7 @@ public class LocationService extends Service {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LocationService.this, "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GridCoorService.this, "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -364,17 +347,15 @@ public class LocationService extends Service {
                     String utf8String = new String(response.data, "UTF-8");
                     return Response.success(utf8String, HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
-                    // log error
                     return Response.error(new ParseError(e));
                 } catch (Exception e) {
-                    // log error
                     return Response.error(new ParseError(e));
                 }
             }
         };
 
         request.setShouldCache(false);
-        LocationService.requestQueue.add(request);
+        GridCoorService.requestQueue.add(request);
     }
 
     @Nullable

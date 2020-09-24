@@ -14,7 +14,7 @@ import com.project.mywetherapp.model.wether.FcstInfo;
 
 import java.util.ArrayList;
 
-// 시간대별 날씨 카드뷰에 사용될 어댑터
+// 시간대별 날씨 카드뷰에 사용될 어댑터(오늘 날씨)
 public class WetherAdapter01 extends RecyclerView.Adapter<WetherAdapter01.ViewHolder> {
 
     private ArrayList<FcstInfo> fcstInfoList = new ArrayList<>();

@@ -22,7 +22,7 @@
 
         <receiver android:name=".util.Noti" />
 
-        <service android:name=".service.LocationService" />
+        <service android:name=".service.GridCoorService" />
         <service android:name=".service.WetherService" />
         <service android:name=".service.AirService" />
         <service android:name=".service.NearbyMsrstnListService"/>

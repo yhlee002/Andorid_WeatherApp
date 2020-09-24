@@ -77,7 +77,8 @@ import androidx.core.content.ContextCompat;
             }
         } catch (
                 Exception e) {
-            Log.d("@@@", "" + e.toString());
+            Log.d("[Gps Tracker - getL]", "error : " + e.getMessage());
+            e.printStackTrace();
         }
 
         return location;
