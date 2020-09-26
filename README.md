@@ -1,4 +1,4 @@
-날씨어때
+날씨어때 <img src="https://user-images.githubusercontent.com/60289743/94329385-8a43f000-fff5-11ea-82b4-55358e946c3f.png" width="45" height="40">
 =================
 * 개발 언어 : Java 1.8
 * 안드로이드 Gradle Plugin 버전 : 4.0.1
