@@ -20,7 +20,7 @@
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <receiver android:name=".util.Noti" />
+        <receiver android:name=".util.NotiReceiver" />
 
         <service android:name=".service.GridCoorService" />
         <service android:name=".service.WetherService" />

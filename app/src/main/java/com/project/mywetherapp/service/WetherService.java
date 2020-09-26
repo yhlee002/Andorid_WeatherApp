@@ -359,13 +359,18 @@ public class WetherService extends Service {
         LocalDateTime day = null;
         LocalDateTime current = LocalDateTime.now();
         String currentTime = current.format(DateTimeFormatter.ofPattern("HH"));
-        // 측정하는 예보일의 전날 밤 11시 발표(내일 날시도 같이)
+        String currentMinute = current.format(DateTimeFormatter.ofPattern("mm"));
+        // 측정하는 예보일의 전날 밤 11시 발표(내일 날씨도 같이)
         Map<String, String> dateData = new HashMap<>();
         String baseDate = "";
         String baseTime = "";
 
-        if (Integer.parseInt(currentTime) >= 23) {
+        if (Integer.parseInt(currentTime) >= 23 && Integer.parseInt(currentMinute) >= 40) { // 11시가 넘으면 당일 11시 발표된 날씨 정보 가져오기
             day = LocalDateTime.now();
+            baseDate = day.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            baseTime = "2300";
+        } else if (Integer.parseInt(currentTime) <= 3) {
+            day = LocalDateTime.now().minusDays(1);
             baseDate = day.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             baseTime = "2300";
         } else {
@@ -393,9 +398,7 @@ public class WetherService extends Service {
         String hour = day.format(DateTimeFormatter.ofPattern("HH"));
         String minute = day.format(DateTimeFormatter.ofPattern("mm"));
 
-//        Log.i("[W Service - CurrDateAndTime]", "baseDate : " + baseDate + ", hour : " + hour + ", minute : " + minute);
-
-        if (Integer.parseInt(minute) >= 40) {
+        if (Integer.parseInt(minute) >= 30) {
             baseTime = hour + "00";
         } else {
             baseTime = (Integer.parseInt(hour) - 1) + "00";
@@ -405,8 +408,8 @@ public class WetherService extends Service {
             baseTime = "0" + baseTime;
         }
 
-        if (Integer.parseInt(baseTime) < 0) {
-            baseTime = "2400";
+        if (Integer.parseInt(baseTime) == 0) {
+            baseTime = "2300";
             day = LocalDateTime.now().minusDays(1);
             baseDate = day.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
