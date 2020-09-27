@@ -49,9 +49,9 @@ public class NotiService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.intent = intent;
 
-        getWetherData(); // 데이터를 가져온 뒤 몇 초 뒤에 알림 설정을 하지 않으면 nullpointer exception이 발생할 가능성 존재
+        getWetherData();
 
-        return START_STICKY;
+        return START_REDELIVER_INTENT; // START_STICKY : 서비스 재실행 but. 인텐트는 null
     }
 
     @Nullable

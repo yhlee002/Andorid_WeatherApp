@@ -46,6 +46,7 @@ import com.project.mywetherapp.util.GpsTracker;
 import com.project.mywetherapp.util.ViewPagerAdapter;
 import com.project.mywetherapp.util.WetherAdapter01;
 import com.project.mywetherapp.util.WetherAdapter02;
+import com.project.mywetherapp.util.WetherAdapter03;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -62,8 +63,10 @@ public class MainActivity extends FragmentActivity {
     GpsTracker gpsTracker;
     ProgressDialog dialog;
     TextView textview_address, baseTime01, baseTime02, temp, mois, wind, minTemp, maxTemp;
-    WetherAdapter01 wetherAdapter;
-    static String minTempStr, maxTempStr;
+    WetherAdapter01 adapter01;
+    WetherAdapter02 adapter02;
+    WetherAdapter03 adapter03;
+//    static String minTempStr, maxTempStr;
 
     // 페이지 슬라이딩을 위한 필드 변수 목록
     private ViewPager mPager;
@@ -273,6 +276,9 @@ public class MainActivity extends FragmentActivity {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
+            adapter01 = new WetherAdapter01();
+            adapter02 = new WetherAdapter02();
+            adapter03 = new WetherAdapter03();
 
             if (resultCode == 1) { // 현재 주소 좌표를 통해 주소 데이터를 받아왔을 때
                 Map<String, String> gridXYMap = (Map<String, String>) resultData.getSerializable("xyMap");
@@ -289,16 +295,17 @@ public class MainActivity extends FragmentActivity {
                 baseTime01.setText("(" + bd.substring(0, 4) + "년 " + bd.substring(4, 6) + "월 " + bd.substring(6, 8) + "일 " + infoList.get(0).getBaseTime().substring(0, 2) + "시 발표)");
 
                 FcstInfo info = null;
-                wetherAdapter = new WetherAdapter01();
+                adapter01 = new WetherAdapter01();
                 for (int i = 0; i < infoList.size(); i++) {
                     info = infoList.get(i);
-                    wetherAdapter.addInfo(info);
+                    adapter01.addInfo(info);
                 }
 
                 // 일최저온도, 일최고온도 측정
                 minTemp = findViewById(R.id.textView17);
                 maxTemp = findViewById(R.id.textView18);
 
+                String minTempStr, maxTempStr;
                 for (FcstInfo i : infoList) {
                     if (i.getCategoryMap().containsKey("TMN")) {
                         ;
@@ -317,7 +324,7 @@ public class MainActivity extends FragmentActivity {
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView.setLayoutManager(layoutManager);
-                recyclerView.setAdapter(wetherAdapter);
+                recyclerView.setAdapter(adapter01);
 
                 // 열한시가 넘은 경우 다음날 날씨가 제공됨을 알림
                 LocalDateTime now = LocalDateTime.now();
@@ -384,17 +391,18 @@ public class MainActivity extends FragmentActivity {
                 ArrayList<FcstInfo> infoList = (ArrayList<FcstInfo>) resultData.getSerializable("infoList");
 
                 FcstInfo info = null;
-                WetherAdapter02 wetherAdapter = new WetherAdapter02();
+                adapter02 = new WetherAdapter02();
                 for (int i = 0; i < infoList.size(); i++) {
                     info = infoList.get(i);
 
-                    wetherAdapter.addInfo(info);
+                    adapter02.addInfo(info);
                 }
 
                 //일최저온도, 일최고온도 측정
                 minTemp = findViewById(R.id.textView37);
                 maxTemp = findViewById(R.id.textView36);
 
+                String minTempStr, maxTempStr;
                 for (FcstInfo i : infoList) {
                     if (i.getCategoryMap().containsKey("TMN")) {
                         minTempStr = i.getCategoryMap().get("TMN");
@@ -411,17 +419,52 @@ public class MainActivity extends FragmentActivity {
                 RecyclerView recyclerView2 = findViewById(R.id.recyclerView2);
                 LinearLayoutManager layoutManager2 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView2.setLayoutManager(layoutManager2);
-                recyclerView2.setAdapter(wetherAdapter);
+                recyclerView2.setAdapter(adapter02);
 
-            } else if (resultCode == 5) { // 주간 예보
-//
-            } else if (resultCode == 6) { // 가까운 미세먼지 측정소의 목록중 가장 가까운 측정소 정보를 받음
+            } else if (resultCode == 5) { // 주간 예보(모레 날씨)
+                ArrayList<FcstInfo> infoList = (ArrayList<FcstInfo>) resultData.getSerializable("infoList");
+
+                String fcstDate = infoList.get(0).getFcstDate();
+                Map<String, String> categoryMap = new HashMap<>();
+
+                FcstInfo allInfo = null;
+                String minTempStr, maxTempStr;
+                adapter03 = new WetherAdapter03();
+                for (int i = 0; i < infoList.size(); i++) {
+                    allInfo = infoList.get(i);
+
+                    if (allInfo.getCategoryMap().containsKey("TMN")) {
+                        minTempStr = allInfo.getCategoryMap().get("TMN");
+                        categoryMap.put("minTemper", minTempStr);
+                    }
+                    if (allInfo.getCategoryMap().containsKey("TMX")) {
+                        maxTempStr = allInfo.getCategoryMap().get("TMX");
+                        categoryMap.put("maxTemper", maxTempStr);
+                    }
+                    if(allInfo.getCategoryMap().containsKey("REH")){ // 강수확률 cf.하늘 상태 : PTY
+
+                    }
+                }
+
+                FcstInfo info = new FcstInfo(null, null, fcstDate, null, categoryMap, null, null);
+                // FcstInfo(String baseDate, String baseTime, String fcstDate, String fcstTime, Map<String, String> categoryMap, String nx, String ny)
+
+                adapter03.addInfo(info);
+
+            } else if (resultCode == 6) { // 주간 예보(중기예보)
+                // 주간
+
+                RecyclerView recyclerView3 = findViewById(R.id.recyclerView3);
+                LinearLayoutManager layoutManager3 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+                recyclerView3.setLayoutManager(layoutManager3);
+                recyclerView3.setAdapter(adapter03);
+            } else if (resultCode == 7) { // 가까운 미세먼지 측정소의 목록중 가장 가까운 측정소 정보를 받음
                 String stationName = (String) resultData.get("stationName");
 
                 // 가까운 측정소를 찾고 나면 이 측정소의 미세먼지 측정 정보 요청
                 sendStationDataforAirInfo(stationName);
 
-            } else if (resultCode == 7) { // 가장 가까운 측정소에서 측정된 미세먼지 정보 받음
+            } else if (resultCode == 8) { // 가장 가까운 측정소에서 측정된 미세먼지 정보 받음
                 Item airInfo = (Item) resultData.getSerializable("airInfo");
                 if (airInfo != null) {
                     // 미세먼지 측정량
@@ -437,8 +480,6 @@ public class MainActivity extends FragmentActivity {
                     TextView air25Grade = findViewById(R.id.textView38);
                     air25Grade.setText("(" + airInfo.pm25Grade1h + ")");
                 }
-            } else if (resultCode == 8) { // 생활지수 정보 받음
-
             } else {
                 Log.i("[MAIN A - RECEIVER]", "no selected resultCode");
             }

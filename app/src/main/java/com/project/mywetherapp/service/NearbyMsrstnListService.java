@@ -75,7 +75,7 @@ public class NearbyMsrstnListService extends Service {
             public void onResponse(String response) {
                 Log.i("[N Service - makeRequest]", "response : "+response);
                 Bundle bundle = dataAdapter(response);
-                receiver.send(6, bundle);
+                receiver.send(7, bundle);
             }
         }, new Response.ErrorListener() {
             @SuppressLint("LongLogTag")
