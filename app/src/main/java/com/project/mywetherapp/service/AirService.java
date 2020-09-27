@@ -70,7 +70,7 @@ public class AirService extends Service {
         Log.i("[A Service - onSC]", "url : "+url);
         makeRequest(url, receiver);
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
     }
 
     private void makeRequest(String url, final ResultReceiver receiver) {
@@ -84,7 +84,7 @@ public class AirService extends Service {
                     bundle = dataAdapter(response);
 
                     if (bundle != null) {
-                        receiver.send(8, bundle);
+                        receiver.send(7, bundle);
                     } else {
                         Toast.makeText(getApplicationContext(), "통신에 실패했습니다.", Toast.LENGTH_SHORT).show();
                     }

@@ -65,7 +65,7 @@ public class NearbyMsrstnListService extends Service {
         String url = createUri(x, y);
         makeRequest(url, receiver);
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
     }
 
     private void makeRequest(String url, ResultReceiver receiver) {
@@ -75,7 +75,7 @@ public class NearbyMsrstnListService extends Service {
             public void onResponse(String response) {
                 Log.i("[N Service - makeRequest]", "response : "+response);
                 Bundle bundle = dataAdapter(response);
-                receiver.send(7, bundle);
+                receiver.send(6, bundle);
             }
         }, new Response.ErrorListener() {
             @SuppressLint("LongLogTag")

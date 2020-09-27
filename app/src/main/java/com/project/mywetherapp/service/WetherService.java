@@ -106,21 +106,17 @@ public class WetherService extends Service {
             base_time_curr = dateData_curr.get("baseTime");
             String urlStr_2 = createUltraUri(VilageUltraUrl);
 
-            // 내일 날씨
+            // 내일, 모레 날씨
             String urlStr_3 = createUri(VilageUrl, 2);
-
-            String urlStr_4 = createUri(VilageUrl, 3);
 
             makeRequestVilage(urlStr_1, 2, receiver); // 동네 예보
             makeRequestUltraVilage(urlStr_2, receiver); // 초단기실황
             makeRequestVilage(urlStr_3, 4, receiver); // 내일 예보
-            makeRequestVilage(urlStr_4, 5, receiver); // 모레 예보
 
 //            makeRequestMidFcst(url, reciver); // 주간 날씨 가져오기(최저/최고 기온 가져오기 + 강수확률 가져오기 -----------> 매일의 최저/최고 기온과 강수확률에 따른 아이콘 변경)
             Log.i("[W Service - onC]", "동네 오늘 예보 url : " + urlStr_1);
             Log.i("[W Service - onC]", "동네 초단기 실황 : " + urlStr_2);
-            Log.i("[W Service - onC]", "동네 내일 예보 url : " + urlStr_3);
-            Log.i("[W Service - onC]", "동네 모레 예보 url : " + urlStr_4);
+            Log.i("[W Service - onC]", "동네 내일/모레 예보 url : " + urlStr_3);
 
 
 
@@ -128,7 +124,7 @@ public class WetherService extends Service {
             e.printStackTrace();
         }
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable

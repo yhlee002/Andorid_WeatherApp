@@ -421,63 +421,34 @@ public class MainActivity extends FragmentActivity {
                 recyclerView2.setLayoutManager(layoutManager2);
                 recyclerView2.setAdapter(adapter02);
 
-            } else if (resultCode == 5) { // 주간 예보(모레 날씨)
-                ArrayList<FcstInfo> infoList = (ArrayList<FcstInfo>) resultData.getSerializable("infoList");
+            } else if (resultCode == 5) { // 주간 예보
 
-                String fcstDate = infoList.get(0).getFcstDate();
-                Map<String, String> categoryMap = new HashMap<>();
+//                RecyclerView recyclerView3 = findViewById(R.id.recyclerView3);
+//                LinearLayoutManager layoutManager3 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+//                recyclerView3.setLayoutManager(layoutManager3);
+//                recyclerView3.setAdapter(adapter03);
 
-                FcstInfo allInfo = null;
-                String minTempStr, maxTempStr;
-                adapter03 = new WetherAdapter03();
-                for (int i = 0; i < infoList.size(); i++) {
-                    allInfo = infoList.get(i);
-
-                    if (allInfo.getCategoryMap().containsKey("TMN")) {
-                        minTempStr = allInfo.getCategoryMap().get("TMN");
-                        categoryMap.put("minTemper", minTempStr);
-                    }
-                    if (allInfo.getCategoryMap().containsKey("TMX")) {
-                        maxTempStr = allInfo.getCategoryMap().get("TMX");
-                        categoryMap.put("maxTemper", maxTempStr);
-                    }
-                    if(allInfo.getCategoryMap().containsKey("REH")){ // 강수확률 cf.하늘 상태 : PTY
-
-                    }
-                }
-
-                FcstInfo info = new FcstInfo(null, null, fcstDate, null, categoryMap, null, null);
-                // FcstInfo(String baseDate, String baseTime, String fcstDate, String fcstTime, Map<String, String> categoryMap, String nx, String ny)
-
-                adapter03.addInfo(info);
-
-            } else if (resultCode == 6) { // 주간 예보(중기예보)
-                // 주간
-
-                RecyclerView recyclerView3 = findViewById(R.id.recyclerView3);
-                LinearLayoutManager layoutManager3 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-                recyclerView3.setLayoutManager(layoutManager3);
-                recyclerView3.setAdapter(adapter03);
-            } else if (resultCode == 7) { // 가까운 미세먼지 측정소의 목록중 가장 가까운 측정소 정보를 받음
+            } else if (resultCode == 6) { // 가까운 미세먼지 측정소의 목록중 가장 가까운 측정소 정보를 받음
                 String stationName = (String) resultData.get("stationName");
 
                 // 가까운 측정소를 찾고 나면 이 측정소의 미세먼지 측정 정보 요청
                 sendStationDataforAirInfo(stationName);
 
-            } else if (resultCode == 8) { // 가장 가까운 측정소에서 측정된 미세먼지 정보 받음
+            } else if (resultCode == 7) { // 가장 가까운 측정소에서 측정된 미세먼지 정보 받음
                 Item airInfo = (Item) resultData.getSerializable("airInfo");
                 if (airInfo != null) {
+                    TextView air10, air25, air10Grade, air25Grade;
                     // 미세먼지 측정량
-                    TextView air10 = findViewById(R.id.textView26);
+                    air10 = findViewById(R.id.textView26);
                     air10.setText(airInfo.pm10Value);
                     // 초미세먼지 측정량
-                    TextView air25 = findViewById(R.id.textView27);
+                    air25 = findViewById(R.id.textView27);
                     air25.setText(airInfo.pm25Value);
                     // 미세먼지 등급
-                    TextView air10Grade = findViewById(R.id.textView28);
+                    air10Grade = findViewById(R.id.textView28);
                     air10Grade.setText("(" + airInfo.pm10Grade1h + ")");
                     // 초미세먼지 등급
-                    TextView air25Grade = findViewById(R.id.textView38);
+                    air25Grade = findViewById(R.id.textView38);
                     air25Grade.setText("(" + airInfo.pm25Grade1h + ")");
                 }
             } else {
@@ -510,12 +481,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         android.location.Address address = addresses.get(0);
-        return address.getAddressLine(0).toString() + "\n";
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        return address.getAddressLine(0) + "\n";
     }
 
     @Override

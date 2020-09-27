@@ -39,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+
 // 기상청 기준 지명이 아니라서 날씨 정보를 받아오지 못할 경우 구글 Geocoding api 를 사용해 구글 기준 주소를 받아옴
 // http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt
 // http://www.kma.go.kr/DFSROOT/POINT/DATA/mdl.[시 code].json.txt
@@ -61,7 +62,7 @@ public class GridCoorService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = manager.getNotificationChannel("02");
-            if(channel == null){
+            if (channel == null) {
                 channel = new NotificationChannel("02", getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
                 manager.createNotificationChannel(channel);
             }
@@ -73,7 +74,7 @@ public class GridCoorService extends Service {
             builder.setSmallIcon(R.mipmap.ic_launcher_round);
 
             Notification noti = builder.build();
-            startForeground(1,noti);
+            startForeground(1, noti);
             manager.cancelAll();
         }
 
@@ -90,7 +91,7 @@ public class GridCoorService extends Service {
         receiver = intent.getParcelableExtra("resultReceiver");
 
         makeRequest(address.split(" "));
-        return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
     }
 
     private void findLocation(String[] addressArr) throws UnsupportedEncodingException {
@@ -107,7 +108,7 @@ public class GridCoorService extends Service {
         String url = null;
         address = addressArr[0] + " " + addressArr[1] + " " + addressArr[2];
         try {
-            url = API_URL + "address=" + URLEncoder.encode(address, "UTF-8") + "&key="+API_KEY;
+            url = API_URL + "address=" + URLEncoder.encode(address, "UTF-8") + "&key=" + API_KEY;
             Log.i("[GridCoorService- mR]", "url : " + url);
             StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
                 xyMap = processLocation(response);

@@ -45,34 +45,5 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-//        super.destroyItem(container, position, object);
     }
-
-    //    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, int mCount) {
-//        super(fragmentActivity);
-//        this.mCount = mCount;
-//    }
-//
-//    @NonNull
-//    @Override
-//    public Fragment createFragment(int position) {
-//        int index = getRealPosition(position);
-//
-//        if (index == 0) {
-//            return new DayAftTomorr_Fragment();
-//        } else if (index == 1) {
-//            return new Today_Fragment();
-//        } else {
-//            return new Tomorrow_Fragment();
-//        }
-//    }
-//
-//    private int getRealPosition(int position) {
-//        return position % mCount; // 0, 1, 2 가 반복되도록
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return 2000;
-//    }
 }

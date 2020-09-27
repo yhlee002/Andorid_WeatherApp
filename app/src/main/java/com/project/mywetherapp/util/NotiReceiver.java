@@ -12,9 +12,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -23,14 +28,22 @@ import androidx.core.app.NotificationCompat;
 import com.project.mywetherapp.R;
 import com.project.mywetherapp.activity.IntroActivity;
 import com.project.mywetherapp.activity.MainActivity;
+import com.project.mywetherapp.model.wether.FcstInfo;
+import com.project.mywetherapp.service.GridCoorService;
+import com.project.mywetherapp.service.WetherService;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class NotiReceiver extends BroadcastReceiver {
     private Map<String, String> wetherDatas;
     private Context context;
     private Intent intent;
+    private static Map<String, String> wetherDataMap;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -41,11 +54,13 @@ public class NotiReceiver extends BroadcastReceiver {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         this.intent = intent;
 
-        wetherDatas = (Map<String, String>) intent.getSerializableExtra("wetherDataMap");
-        Log.i("[Noti]", "최저온도 : "+wetherDatas.get("TMN")+", 최고온도 : "+wetherDatas.get("TMX")+", 강수확률 : "+wetherDatas.get("POP"));
-        // 스레드 실행
-        setNoti setNoti = new setNoti();
-        setNoti.run();
+        getWetherData();
+
+//        wetherDatas = (Map<String, String>) intent.getSerializableExtra("wetherDataMap");
+//        Log.i("[Noti]", "최저온도 : "+wetherDatas.get("TMN")+", 최고온도 : "+wetherDatas.get("TMX")+", 강수확률 : "+wetherDatas.get("POP"));
+//        // 스레드 실행
+//        setNoti setNoti = new setNoti();
+//        setNoti.run();
     }
 
     class setNoti implements Runnable {
@@ -60,13 +75,7 @@ public class NotiReceiver extends BroadcastReceiver {
                 stackBuilder.addParentStack(MainActivity.class);
                 stackBuilder.addNextIntent(intent);
                 PendingIntent pIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT).getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                // PendingIntent pIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT); // 해당 requestCode로 이후 이 알람을 취소할 수 있음
 
-//                // 부팅 후 리시버 사용이 가능하게 설정
-//                PackageManager pm = context.getPackageManager();
-//                ComponentName receiver = new ComponentName(context, NotiReceiver.class);
-//                pm.setApplicationEnabledSetting(String.valueOf(receiver), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-//
                 NotificationManager notificationmanager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
                 // 기존에 등록되어 알림이 있다면 모두 제거
@@ -108,7 +117,6 @@ public class NotiReceiver extends BroadcastReceiver {
                         ActivityManager.RunningTaskInfo taskInfo = (ActivityManager.RunningTaskInfo) tasks.get(i);
                         if (taskInfo.topActivity.getPackageName().equals("com.project.mywetherapp")) {
                             acManager.moveTaskToFront(taskInfo.id, 0);
-                            //                    noti.flags = Notification.FLAG_ONGOING_EVENT;
                         }
 
                     }
@@ -128,4 +136,120 @@ public class NotiReceiver extends BroadcastReceiver {
             }
         }
     }
+
+    private void getWetherData() {
+        GpsTracker gpsTracker = new GpsTracker(context);
+        double latitude = gpsTracker.getLatitude();
+        double longitude = gpsTracker.getLongitude();
+        String address = getCurrentAddress(latitude, longitude);
+        String[] addressArr = address.split(" ");
+
+        if (!(addressArr[0].equals("지오코더")||addressArr[0].equals("잘못된")||addressArr[0].equals("주소"))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(addressArr[1] + " ");
+            sb.append(addressArr[2] + " ");
+            sb.append(addressArr[3]);
+
+            sendAddressData(sb.toString());
+        }
+    }
+
+    // 지오코더 api를 사용해 x, y좌표를 이용해 현재 위치 가져옴
+    public String getCurrentAddress(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocation(
+                    latitude,
+                    longitude,
+                    7);
+        } catch (IOException ioException) {
+            return "지오코더 서비스 사용불가";
+        } catch (IllegalArgumentException illegalArgumentException) {
+            return "잘못된 GPS 좌표";
+        }
+
+        if (addresses == null || addresses.size() == 0) {
+            return "주소 미발견";
+        }
+
+        android.location.Address address = addresses.get(0);
+        return address.getAddressLine(0).toString() + "\n";
+    }
+
+    // Google Geocoding api를 위한 주소 전달
+    private void sendAddressData(String address) {
+        Intent intent = new Intent(context, GridCoorService.class);
+        intent.putExtra("address", address);
+        intent.putExtra("resultReceiver", resultReceiver);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
+    // 날씨 정보를 위해 x, y좌표 전달
+    private void sendXYforWetherInfo(String x, String y) {
+        Intent intent = new Intent(context, WetherService.class);
+        intent.putExtra("x", x);
+        intent.putExtra("y", y);
+        intent.putExtra("resultReceiver", resultReceiver);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
+    private Handler handler = new Handler();
+    private ResultReceiver resultReceiver = new ResultReceiver(handler){
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if(resultCode == 1){ // 현재 주소 좌표를 통해 주소 데이터를 받아왔을 때
+                Map<String, String> gridXYMap = (Map<String, String>) resultData.getSerializable("xyMap");
+                String x = gridXYMap.get("x");
+                String y = gridXYMap.get("y");
+
+                sendXYforWetherInfo(x, y);
+            } else if (resultCode == 2) { // 오늘 예보
+                ArrayList<FcstInfo> infoList = (ArrayList<FcstInfo>) resultData.getSerializable("infoList");
+                // 일최저온도, 일최고온도 측정
+                String minTempStr = "";
+                String maxTempStr = "";
+                String popPercent = "0%";
+                for (FcstInfo i : infoList) {
+                    if (i.getCategoryMap().containsKey("POP")) {
+                        if(popPercent != "0%"){
+                            popPercent = i.getCategoryMap().get("POP");
+                        }
+                    }
+                    if (i.getCategoryMap().containsKey("TMN")) {
+                        minTempStr = i.getCategoryMap().get("TMN");
+                        continue;
+                    }
+                    if (i.getCategoryMap().containsKey("TMX")) {
+                        maxTempStr = i.getCategoryMap().get("TMX");
+                        break;
+                    }
+                }
+
+                wetherDatas = new HashMap<>();
+                wetherDatas.put("POP", popPercent);
+                wetherDatas.put("TMN", minTempStr);
+                wetherDatas.put("TMX", maxTempStr);
+
+
+                Log.i("[Noti]", "최저온도 : "+wetherDatas.get("TMN")+", 최고온도 : "+wetherDatas.get("TMX")+", 강수확률 : "+wetherDatas.get("POP"));
+                // 스레드 실행
+                setNoti setNoti = new setNoti();
+                setNoti.run();
+
+            }
+        }
+    };
 }

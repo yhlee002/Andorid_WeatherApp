@@ -61,12 +61,6 @@
                 android:layout_weight="1"
                 android:text="해지" />
 
-            <Button
-                android:id="@+id/exitButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="취소" />
         </LinearLayout>
 
     </LinearLayout>
