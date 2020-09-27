@@ -1,6 +1,5 @@
 package com.project.mywetherapp.util;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -8,10 +7,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.media.AudioManager;
@@ -26,7 +23,6 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.project.mywetherapp.R;
-import com.project.mywetherapp.activity.IntroActivity;
 import com.project.mywetherapp.activity.MainActivity;
 import com.project.mywetherapp.model.wether.FcstInfo;
 import com.project.mywetherapp.service.GridCoorService;
@@ -56,11 +52,6 @@ public class NotiReceiver extends BroadcastReceiver {
 
         getWetherData();
 
-//        wetherDatas = (Map<String, String>) intent.getSerializableExtra("wetherDataMap");
-//        Log.i("[Noti]", "최저온도 : "+wetherDatas.get("TMN")+", 최고온도 : "+wetherDatas.get("TMX")+", 강수확률 : "+wetherDatas.get("POP"));
-//        // 스레드 실행
-//        setNoti setNoti = new setNoti();
-//        setNoti.run();
     }
 
     class setNoti implements Runnable {
@@ -125,7 +116,7 @@ public class NotiReceiver extends BroadcastReceiver {
                 Notification noti = builder.build();
 
                 PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-                PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK  |
+                PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                         PowerManager.ACQUIRE_CAUSES_WAKEUP |
                         PowerManager.ON_AFTER_RELEASE, "My:Tag");
                 wakeLock.acquire(5000);
@@ -144,7 +135,7 @@ public class NotiReceiver extends BroadcastReceiver {
         String address = getCurrentAddress(latitude, longitude);
         String[] addressArr = address.split(" ");
 
-        if (!(addressArr[0].equals("지오코더")||addressArr[0].equals("잘못된")||addressArr[0].equals("주소"))) {
+        if (!(addressArr[0].equals("지오코더") || addressArr[0].equals("잘못된") || addressArr[0].equals("주소"))) {
             StringBuilder sb = new StringBuilder();
             sb.append(addressArr[1] + " ");
             sb.append(addressArr[2] + " ");
@@ -205,12 +196,12 @@ public class NotiReceiver extends BroadcastReceiver {
     }
 
     private Handler handler = new Handler();
-    private ResultReceiver resultReceiver = new ResultReceiver(handler){
+    private ResultReceiver resultReceiver = new ResultReceiver(handler) {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            if(resultCode == 1){ // 현재 주소 좌표를 통해 주소 데이터를 받아왔을 때
+            if (resultCode == 1) { // 현재 주소 좌표를 통해 주소 데이터를 받아왔을 때
                 Map<String, String> gridXYMap = (Map<String, String>) resultData.getSerializable("xyMap");
                 String x = gridXYMap.get("x");
                 String y = gridXYMap.get("y");
@@ -224,7 +215,7 @@ public class NotiReceiver extends BroadcastReceiver {
                 String popPercent = "0%";
                 for (FcstInfo i : infoList) {
                     if (i.getCategoryMap().containsKey("POP")) {
-                        if(popPercent != "0%"){
+                        if (popPercent != "0%") {
                             popPercent = i.getCategoryMap().get("POP");
                         }
                     }
@@ -244,10 +235,12 @@ public class NotiReceiver extends BroadcastReceiver {
                 wetherDatas.put("TMX", maxTempStr);
 
 
-                Log.i("[Noti]", "최저온도 : "+wetherDatas.get("TMN")+", 최고온도 : "+wetherDatas.get("TMX")+", 강수확률 : "+wetherDatas.get("POP"));
+                Log.i("[Noti]", "최저온도 : " + wetherDatas.get("TMN") + ", 최고온도 : " + wetherDatas.get("TMX") + ", 강수확률 : " + wetherDatas.get("POP"));
                 // 스레드 실행
                 setNoti setNoti = new setNoti();
                 setNoti.run();
+
+            } else {
 
             }
         }

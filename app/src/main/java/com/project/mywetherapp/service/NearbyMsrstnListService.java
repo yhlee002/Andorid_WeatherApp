@@ -65,7 +65,7 @@ public class NearbyMsrstnListService extends Service {
         String url = createUri(x, y);
         makeRequest(url, receiver);
 
-        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, flags, startId); // START_REDELIVER_INTENT;
     }
 
     private void makeRequest(String url, ResultReceiver receiver) {

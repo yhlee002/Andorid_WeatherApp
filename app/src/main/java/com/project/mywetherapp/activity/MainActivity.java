@@ -437,7 +437,7 @@ public class MainActivity extends FragmentActivity {
             } else if (resultCode == 7) { // 가장 가까운 측정소에서 측정된 미세먼지 정보 받음
                 Item airInfo = (Item) resultData.getSerializable("airInfo");
                 if (airInfo != null) {
-                    TextView air10, air25, air10Grade, air25Grade;
+                    final TextView air10, air25, air10Grade, air25Grade;
                     // 미세먼지 측정량
                     air10 = findViewById(R.id.textView26);
                     air10.setText(airInfo.pm10Value);

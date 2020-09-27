@@ -5,29 +5,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.ResultReceiver;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.project.mywetherapp.model.wether.FcstInfo;
-import com.project.mywetherapp.util.GpsTracker;
 import com.project.mywetherapp.util.NotiReceiver;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 // 매일 일정한 시간에 Noti를 실행하기 위한 서비스
@@ -69,7 +58,7 @@ public class NotiService extends Service {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
 
-        return START_REDELIVER_INTENT; // START_STICKY : 서비스 재실행 but. 인텐트는 null
+        return START_STICKY; // START_REDELIVER_INTENT;START_STICKY : 서비스 재실행 but. 인텐트는 null
     }
 
     @Nullable

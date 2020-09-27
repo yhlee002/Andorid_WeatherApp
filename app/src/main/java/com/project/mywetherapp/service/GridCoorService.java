@@ -91,7 +91,7 @@ public class GridCoorService extends Service {
         receiver = intent.getParcelableExtra("resultReceiver");
 
         makeRequest(address.split(" "));
-        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, flags, startId); // START_REDELIVER_INTENT;
     }
 
     private void findLocation(String[] addressArr) throws UnsupportedEncodingException {

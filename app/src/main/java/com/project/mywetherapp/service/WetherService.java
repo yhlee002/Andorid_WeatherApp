@@ -124,7 +124,7 @@ public class WetherService extends Service {
             e.printStackTrace();
         }
 
-        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, flags, startId); // START_REDELIVER_INTENT;
     }
 
     @Nullable

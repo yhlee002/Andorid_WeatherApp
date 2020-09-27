@@ -70,7 +70,7 @@ public class AirService extends Service {
         Log.i("[A Service - onSC]", "url : "+url);
         makeRequest(url, receiver);
 
-        return START_REDELIVER_INTENT; // super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, flags, startId); // START_REDELIVER_INTENT;
     }
 
     private void makeRequest(String url, final ResultReceiver receiver) {
