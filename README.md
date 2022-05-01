@@ -1,5 +1,6 @@
 날씨어때 <img src="https://user-images.githubusercontent.com/60289743/94329385-8a43f000-fff5-11ea-82b4-55358e946c3f.png" width="45" height="40">
 =================
+* 개발 기간 : 2020.08.20 ~ 2020.09.28
 * 개발 언어 : Java 1.8
 * 안드로이드 Gradle Plugin 버전 : 4.0.1
 * Gradle 버전 : 6.1.1
